@@ -1,8 +1,9 @@
 #!/bin/bash
 #$ -N Mandelbrot
-#$ -q class8i
+#$ -q pub8i
 #$ -pe mpi 64
 #$ -R y
+
 
 # Grid Engine Notes:
 # -----------------
