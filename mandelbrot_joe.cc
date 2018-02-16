@@ -86,9 +86,6 @@ main (int argc, char* argv[])
 	cout <<"This code is for joe"<<endl;
 	cout << endTime-startTime << endl;
 
-	gil::rgb8_image_t img(height, width);
-	auto img_view = gil::view(img);
-
 	for (int i = 0; i < height; ++i) {
 		offset = i * width;
 		for (int j = 0; j < width; ++j) {
