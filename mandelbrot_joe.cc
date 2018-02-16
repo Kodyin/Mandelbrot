@@ -80,18 +80,35 @@ main (int argc, char* argv[])
 	offset = rank*blockSize;
 	MPI_Barrier (MPI_COMM_WORLD);
 	MPI_Gather(send, blockSize * width, MPI_DOUBLE, recv + offset, blockSize * width, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	
+	if(rank == 0){
+		for (int i = 0; i < size * blockSize; ++i) {
+			offset = i * width;
+			for (int j = 0; j < width; ++j) {
+				img_view(j, i) = render(recv[j + offset]);
+			}
+		}
+		y = minY + size * blockSize * it;
+		for (int i = size * blockSize; i < height; i++) {
+			x = minX;
+			for (int j = 0; j < width; j++) {
+				img_view(j, i) = render(mandelbrot(x, y) / 512.0);
+				x += jt;
+			}
+			y += it;
+
+		}
+	}
+
+
+
 	MPI_Finalize();
 
 	double endTime = MPI_Wtime();
 	cout <<"This code is for joe"<<endl;
 	cout << endTime-startTime << endl;
 
-	for (int i = 0; i < height; ++i) {
-		offset = i * width;
-		for (int j = 0; j < width; ++j) {
-			img_view(j, i) = render(recv[j + offset]);
-		}
-	}	
+		
 
 	gil::png_write_view("mandelbrot_joe.png", const_view(img));
 
