@@ -84,7 +84,7 @@ main (int argc, char* argv[])
 
 	double endTime = MPI_Wtime();
 	cout <<"This code is for joe"<<endl;
-	cout << endTIme-startTime << endl;
+	cout << endTime-startTime << endl;
 
 	gil::rgb8_image_t img(height, width);
 	auto img_view = gil::view(img);
