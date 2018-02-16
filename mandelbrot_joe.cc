@@ -6,7 +6,10 @@
 
 #include <iostream>
 #include <cstdlib>
+
 #include "render.hh"
+#include <mpi.h>
+
 using namespace std;
 
 int mandelbrot(double x, double y) {
