@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <mpi.h> 
 #include "render.hh"
-
+using namespace std;
 
 int
 mandelbrot(double x, double y) {
