@@ -59,13 +59,14 @@ main (int argc, char* argv[])
 	int rank, size, offset, blockSize;
 	double *recv;
 
-	double startTime = MPI_Wtime();
-
+	
+	double startTime;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	blockSize = height / size;
 	if(rank == 0) {
+		startTime = MPI_Wtime();
 		recv = (double *) malloc(height * width * sizeof(double));
 	}
 	double *send = (double *) malloc(blockSize * width * sizeof(double));
