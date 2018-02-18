@@ -81,12 +81,6 @@ main(int argc, char* argv[]) {
     	MPI_Gather(send, width, MPI_DOUBLE, recv+offset, width, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   	}
  	
-	if(rank==0) {
-		double endTime = MPI_Wtime();
-		cout << "mandelbrot_susie" <<endl; 
-		cout << endTime - startTime <<endl;
-	}
-
   	if (rank==0) {
     	gil::rgb8_image_t img(height, width);
     	auto img_view = gil::view(img);
@@ -110,7 +104,10 @@ main(int argc, char* argv[]) {
 	      	y += it;
 	    }
 
-
+	    double endTime = MPI_Wtime();
+		cout << "mandelbrot_susie" <<endl; 
+		cout << endTime - startTime <<endl;
+		
     	gil::png_write_view("mandelbrot_susie.png", const_view(img));
 	}	
   	MPI_Finalize();

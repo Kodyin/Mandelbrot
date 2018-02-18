@@ -91,7 +91,8 @@ void master(int height, int width, double minX, double minY, double jt, double i
   	}
 
   	double totalT = MPI_Wtime() - startTime;
-  	printf("Master & Slave  Time: %f\r\n", totalT);
+  	cout<<"Master & Slave:"<<endl;
+  	cout<<totalT;
   	gil::png_write_view("mandelbrot-ms.png", const_view(img));
 }
 
@@ -133,8 +134,6 @@ main (int argc, char* argv[])
   	}
 
   	MPI_Finalize();
-
-  	return 0;
 
 }
 
