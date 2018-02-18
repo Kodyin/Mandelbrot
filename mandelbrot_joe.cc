@@ -57,13 +57,17 @@ main (int argc, char* argv[])
 	auto img_view = gil::view(img);
 
 	int rank, size, offset, blockSize;
-	double *recv = (double *) malloc(height * width * sizeof(double));
+	double *recv;
+
 	double startTime = MPI_Wtime();
 
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	blockSize = height / size;
+	if(rank == 0) {
+		recv = (double *) malloc(height * width * sizeof(double));
+	}
 	double *send = (double *) malloc(blockSize * width * sizeof(double));
 
 	y = minY + rank * blockSize * it;
@@ -98,19 +102,16 @@ main (int argc, char* argv[])
 			y += it;
 
 		}
+		double endTime = MPI_Wtime();
+		cout <<"This code is for joe"<<endl;
+		cout << endTime-startTime << endl;
+		
+		gil::png_write_view("mandelbrot_joe.png", const_view(img));
 	}
 
 
 
 	MPI_Finalize();
-
-	double endTime = MPI_Wtime();
-	cout <<"This code is for joe"<<endl;
-	cout << endTime-startTime << endl;
-
-		
-
-	gil::png_write_view("mandelbrot_joe.png", const_view(img));
 
 }
 
