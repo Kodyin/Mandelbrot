@@ -17,19 +17,19 @@ using namespace std;
 
 int
 mandelbrot(double x, double y) {
-  int maxit = 511;
-  double cx = x;
-  double cy = y;
-  double newx, newy;
+	int maxit = 511;
+	double cx = x;
+	double cy = y;
+	double newx, newy;
 
-  int it = 0;
-  for (it = 0; it < maxit && (x*x + y*y) < 4; ++it) {
-    newx = x*x - y*y + cx;
-    newy = 2*x*y + cy;
-    x = newx;
-    y = newy;
-  }
-  return it;
+	int it = 0;
+	for (it = 0; it < maxit && (x*x + y*y) < 4; ++it) {
+	    newx = x*x - y*y + cx;
+	    newy = 2*x*y + cy;
+	    x = newx;
+	    y = newy;
+	}
+	return it;
 }
 
 int
@@ -60,13 +60,13 @@ main(int argc, char* argv[]) {
   	MPI_Init (&argc, &argv);	
   	MPI_Comm_size (MPI_COMM_WORLD, &size);	
   	MPI_Comm_rank(MPI_COMM_WORLD, &rank);	
-	double time1; 
+	double startTime; 
   	if (rank == 0) {
-  		time1 = MPI_Wtime();
-    	recv = (double*)malloc(sizeof(double) * height * width );
+  		startTime = MPI_Wtime();
+    	recv = (double*)malloc(sizeof(double) * height * width);
   	}
 
-  	double *send = (double*) malloc(width * sizeof(double)) ;  
+  	double *send = (double*) malloc(width * sizeof(double));  
 
   	y = minY+(rank*it);
   	for (int i = rank; i < (floor)(height/size) * size; i+=size) {
@@ -82,16 +82,16 @@ main(int argc, char* argv[]) {
   	}
  	
 	if(rank==0) {
-		double time2 = MPI_Wtime();
-		cout << "This code is for susie" <<endl; 
-		cout << time2-time1 <<endl;
+		double endTime = MPI_Wtime();
+		cout << "mandelbrot_susie" <<endl; 
+		cout << endTime - startTime <<endl;
 	}
 
   	if (rank==0) {
     	gil::rgb8_image_t img(height, width);
     	auto img_view = gil::view(img);
-    	int extraRowSpace = (floor)(height/size) * size; 
-    	for (int i = 0; i < extraRowSpace; ++i) {
+    	int extraRows = (floor)(height/size) * size; 
+    	for (int i = 0; i < extraRows; ++i) {
       		offset = i*width;
       		for (int j = 0; j < width; ++j) {
         		img_view(j, i) = render(recv[j+offset]);
@@ -99,8 +99,8 @@ main(int argc, char* argv[]) {
     	}
 
 	   	//generate the image for left over rows
-	   	y = minY + (extraRowSpace * it);
-	   	for( int  i =extraRowSpace; i<height; i++)
+	   	y = minY + (extraRows * it);
+	   	for( int i = extraRows; i<height; i++)
 	   	{
 	      	x = minX;
 	     	for (int j = 0; j < width; j++) {
@@ -114,6 +114,5 @@ main(int argc, char* argv[]) {
     	gil::png_write_view("mandelbrot_susie.png", const_view(img));
 	}	
   	MPI_Finalize();
-  	return 0;
 }
 /* eof */

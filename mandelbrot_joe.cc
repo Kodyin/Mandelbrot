@@ -52,11 +52,8 @@ main (int argc, char* argv[])
 	double it = (maxY - minY)/height;
 	double jt = (maxX - minX)/width;
 	double x, y;
-	
-	gil::rgb8_image_t img(height, width);
-	auto img_view = gil::view(img);
 
-	int rank, size, offset, blockSize;
+	int rank, size, offset, rowPerPro;
 	double *recv;
 
 	
@@ -64,16 +61,16 @@ main (int argc, char* argv[])
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	blockSize = height / size;
+	rowPerPro = height / size;
 	if(rank == 0) {
 		startTime = MPI_Wtime();
 		recv = (double *) malloc(height * width * sizeof(double));
 	}
-	double *send = (double *) malloc(blockSize * width * sizeof(double));
+	double *send = (double *) malloc(rowPerPro * width * sizeof(double));
 
-	y = minY + rank * blockSize * it;
+	y = minY + rank * rowPerPro * it;
 	offset = 0;
-	for (int i = 0; i < blockSize; i++) {
+	for (int i = 0; i < rowPerPro; i++) {
 		x = minX;
 		for (int j = 0; j < width; j++) {
 			send[offset + j] = mandelbrot(x, y) / 512.0;
@@ -82,29 +79,30 @@ main (int argc, char* argv[])
 		offset += width;
 		y += it;
 	}
-	offset = rank*blockSize;
+	offset = rank*rowPerPro;
 	MPI_Barrier (MPI_COMM_WORLD);
-	MPI_Gather(send, blockSize * width, MPI_DOUBLE, recv + offset, blockSize * width, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Gather(send, rowPerPro * width, MPI_DOUBLE, recv + offset, rowPerPro * width, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 	
 	if(rank == 0){
-		for (int i = 0; i < size * blockSize; ++i) {
+		gil::rgb8_image_t img(height, width);
+		auto img_view = gil::view(img);
+		for (int i = 0; i < size * rowPerPro; ++i) {
 			offset = i * width;
 			for (int j = 0; j < width; ++j) {
 				img_view(j, i) = render(recv[j + offset]);
 			}
 		}
-		y = minY + size * blockSize * it;
-		for (int i = size * blockSize; i < height; i++) {
+		y = minY + size * rowPerPro * it;
+		for (int i = size * rowPerPro; i < height; i++) {
 			x = minX;
 			for (int j = 0; j < width; j++) {
 				img_view(j, i) = render(mandelbrot(x, y) / 512.0);
 				x += jt;
 			}
 			y += it;
-
 		}
 		double endTime = MPI_Wtime();
-		cout <<"This code is for joe"<<endl;
+		cout <<"mandelbrot_joe"<<endl;
 		cout << endTime-startTime << endl;
 		
 		gil::png_write_view("mandelbrot_joe.png", const_view(img));
