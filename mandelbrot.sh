@@ -18,4 +18,18 @@ module load boost/1.57.0
 module load openmpi-1.8.3/gcc-4.9.2
 
 # Run the program 
-mpirun -np 1  ./mandelbrot_joe 1000 1000
+# echo "proc = 16"
+# mpirun -np 16  ./mandelbrot_joe 1000 1000
+# mpirun -np 16  ./mandelbrot_susie 1000 1000
+# mpirun -np 16  ./mandelbrot_ms 1000 1000
+
+
+echo "proc = 48"
+mpirun -np 48  ./mandelbrot_joe 1000 1000
+mpirun -np 48  ./mandelbrot_susie 1000 1000
+mpirun -np 48  ./mandelbrot_ms 1000 1000
+
+echo "proc = 64"
+mpirun -np 64  ./mandelbrot_joe 4000 4000
+mpirun -np 64  ./mandelbrot_susie 4000 4000
+mpirun -np 64  ./mandelbrot_ms 4000 4000
